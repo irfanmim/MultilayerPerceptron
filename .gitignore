@@ -1,0 +1,13 @@
+# https://github.com/jakevdp/mst_clustering
+
+*.pyc
+build/
+dist/
+MANIFEST
+
+.coverage
+
+#*
+*~
+
+.ipynb_checkpoints
