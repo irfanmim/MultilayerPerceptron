@@ -4,6 +4,8 @@ MLP
 
 import numpy as np
 
+from scipy.special import expit
+
 from sklearn.base import BaseEstimator, ClassifierMixin
 
 
@@ -41,6 +43,16 @@ class MLP(BaseEstimator, ClassifierMixin):
         return tuple(np.full(dim, value) for dim in dimensions)
 
     # Fit
+
+    def _feed_forward(self, X):
+        data = X
+
+        for i in range(len(self.y_)):
+            sigma_values = np.sum(
+                data * self.weight_[i], axis=1) + self.weight_bias_[i]
+
+            data = self.y_[i]
+            expit(sigma_values, out=data)
 
     def fit(self, X, y):
         """Fit the model to data matrix X and target(s) y.
