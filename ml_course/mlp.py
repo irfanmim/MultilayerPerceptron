@@ -2,25 +2,77 @@
 MLP
 """
 
-import numpy as np
+from numpy import full
 
-from sklearn.base import BaseEstimator, ClusterMixin
-from sklearn.metrics import pairwise_distances
+from sklearn.base import BaseEstimator, ClassifierMixin
 
 
-class MLP(BaseEstimator, ClusterMixin):
+class MLP(BaseEstimator, ClassifierMixin):
+    def __init__(self, hidden_layer_sizes=(100, )):
+        self.hidden_layer_sizes = hidden_layer_sizes
 
-    def __init__(self,
-                 k=2,
-                 tolerance=0.0001,
-                 max_iteration=500):
-        self.k = k
-        self.tolerance = tolerance
-        self.max_iteration = max_iteration
+    # Utilities
 
-    def fit(self, data):
-        self.centroids = {}
-        self.label = []
+    def _gen_store_dimensions(self):
+        i = 0
 
-        self.labels_ = self.label
+        # Input layer.
+        prev_n_cnt = self.input_size_
+        yield (
+            self.input_size_,
+            prev_n_cnt + 1,
+        )
+        i = i + 1
+
+        # Hidden layers.
+        self.begin_i_hidden_ = i
+
+        for size in self.hidden_layer_sizes:
+            yield (
+                size,
+                prev_n_cnt + 1,
+            )
+            i = i + 1
+            prev_n_cnt = size
+
+        # Output layer.
+        self.begin_i_output_ = i
+        yield (
+            1,
+            prev_n_cnt + 1,
+        )
+
+    def _gen_store(self, dimensions, value=0):
+        return tuple(full(dim, value) for dim in dimensions)
+
+    # Fit
+
+    def fit(self, X, y):
+        """Fit the model to data matrix X and target(s) y.
+
+        Parameters
+        ----------
+        X : array-like or sparse matrix, shape (n_samples, n_features)
+            The input data.
+
+        y : array-like, shape (n_samples,) or (n_samples, n_outputs)
+            The target values (class labels in classification, real numbers in
+            regression).
+
+        Returns
+        -------
+        self : returns a trained MLP model.
+        """
+
+        self.input_size_ = X.shape[1]
+
+        dimens = tuple(dim for dim in self._gen_store_dimensions())
+        dimens_n_only = tuple((dim[0], ) for dim in dimens)
+
+        self.weight_ = self._gen_store(dimens)
+
+        self.bias_ = self._gen_store(dimens_n_only, 1)
+        self.y_ = self._gen_store(dimens_n_only)
+        self.err_ = self._gen_store(dimens_n_only)
+
         return self
