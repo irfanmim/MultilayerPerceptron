@@ -22,29 +22,20 @@ class MLP(BaseEstimator, ClassifierMixin):
         self.i_input_ = i
 
         prev_n_cnt = self.input_size_
-        yield (
-            self.input_size_,
-            prev_n_cnt + 1,
-        )
+        yield (self.input_size_, prev_n_cnt,)
         i = i + 1
 
         # Hidden layers.
         self.i_hidden_begin_ = i
 
         for size in self.hidden_layer_sizes:
-            yield (
-                size,
-                prev_n_cnt + 1,
-            )
+            yield (size, prev_n_cnt,)
             i = i + 1
             prev_n_cnt = size
 
         # Output layer.
         self.i_output_ = i
-        yield (
-            1,
-            prev_n_cnt + 1,
-        )
+        yield (1, prev_n_cnt,)
 
     def _gen_store(self, dimensions, value=0):
         return tuple(np.full(dim, value) for dim in dimensions)
