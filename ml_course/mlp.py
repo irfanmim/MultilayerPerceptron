@@ -2,7 +2,7 @@
 MLP
 """
 
-from numpy import full
+import numpy as np
 
 from sklearn.base import BaseEstimator, ClassifierMixin
 
@@ -47,7 +47,7 @@ class MLP(BaseEstimator, ClassifierMixin):
         )
 
     def _gen_store(self, dimensions, value=0):
-        return tuple(full(dim, value) for dim in dimensions)
+        return tuple(np.full(dim, value) for dim in dimensions)
 
     # Fit
 
