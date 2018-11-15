@@ -8,8 +8,10 @@ from sklearn.base import BaseEstimator, ClassifierMixin
 
 
 class MLP(BaseEstimator, ClassifierMixin):
-    def __init__(self, hidden_layer_sizes=(100, )):
+    def __init__(self, hidden_layer_sizes=(100, ), momentum=0.0001, learning_rate=0.25):
         self.hidden_layer_sizes = hidden_layer_sizes
+        self.momentum = momentum
+        self.learning_rate = learning_rate
 
     # Utilities
 
