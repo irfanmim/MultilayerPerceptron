@@ -19,6 +19,8 @@ class MLP(BaseEstimator, ClassifierMixin):
         i = 0
 
         # Input layer.
+        self.i_input_ = i
+
         prev_n_cnt = self.input_size_
         yield (
             self.input_size_,
@@ -27,7 +29,7 @@ class MLP(BaseEstimator, ClassifierMixin):
         i = i + 1
 
         # Hidden layers.
-        self.begin_i_hidden_ = i
+        self.i_hidden_begin_ = i
 
         for size in self.hidden_layer_sizes:
             yield (
@@ -38,7 +40,7 @@ class MLP(BaseEstimator, ClassifierMixin):
             prev_n_cnt = size
 
         # Output layer.
-        self.begin_i_output_ = i
+        self.i_output_ = i
         yield (
             1,
             prev_n_cnt + 1,
