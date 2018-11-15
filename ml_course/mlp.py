@@ -9,6 +9,10 @@ from scipy.special import expit
 from sklearn.base import BaseEstimator, ClassifierMixin
 
 
+def sigmoid_grad(y):
+    return y * (1.0 - y)
+
+
 class MLP(BaseEstimator, ClassifierMixin):
     def __init__(self, hidden_layer_sizes=(100, ), momentum=0.0001, learning_rate=0.25):
         self.hidden_layer_sizes = hidden_layer_sizes
@@ -54,6 +58,25 @@ class MLP(BaseEstimator, ClassifierMixin):
             data = self.y_[i]
             expit(sigma_values, out=data)
 
+    def _local_gradient(self, X, y):
+        # Output unit.
+        weights = self.weight_[self.i_output_]
+        err_terms = self.err_term_[self.i_output_]
+
+        out_y = self.y_[self.i_output_][0]
+        err_terms[0] = sigmoid_grad(out_y) * (y - out_y)
+
+        # Hidden unit.
+        for i in range(len(self.y_) - 2, -1, -1):
+            d_y_arr = sigmoid_grad(self.y_[i])
+            sig_arr = np.sum(
+                np.expand_dims(err_terms, axis=1) * weights, axis=0)
+
+            err_terms = self.err_term_[i]
+            weights = self.weight_[i]
+
+            np.multiply(d_y_arr, sig_arr, out=err_terms)
+
     def fit(self, X, y):
         """Fit the model to data matrix X and target(s) y.
 
@@ -80,5 +103,6 @@ class MLP(BaseEstimator, ClassifierMixin):
         self.weight_bias_ = self._gen_store(dimens_n_only)
         self.y_ = self._gen_store(dimens_n_only)
         self.err_ = self._gen_store(dimens_n_only)
+        self.err_term_ = self._gen_store(dimens_n_only)
 
         return self
