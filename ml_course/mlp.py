@@ -65,8 +65,7 @@ class MLP(BaseEstimator, ClassifierMixin):
         dimens_n_only = tuple((dim[0], ) for dim in dimens)
 
         self.weight_ = self._gen_store(dimens)
-
-        self.bias_ = self._gen_store(dimens_n_only, 1)
+        self.weight_bias_ = self._gen_store(dimens_n_only)
         self.y_ = self._gen_store(dimens_n_only)
         self.err_ = self._gen_store(dimens_n_only)
 
